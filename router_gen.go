@@ -1,0 +1,15 @@
+package main
+
+import (
+	router "douyin_backend/biz/router"
+
+	"github.com/cloudwego/hertz/pkg/app/server"
+)
+
+// register registers all routers.
+func register(r *server.Hertz) {
+
+	router.GeneratedRegister(r)
+
+	customizedRegister(r)
+}
