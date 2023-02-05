@@ -31,5 +31,13 @@ const i64 MsgTypeReceived = 2
 
 struct FriendUser{
     1: optional string message
-    2: required int64 msgType
+    2: required i64 msgType
+}
+
+struct Message{
+    1: required i64 id
+    2: required i64 to_user_id
+    3: required i64 from_user_id
+    4: required string content
+    5: optional string create_time
 }
