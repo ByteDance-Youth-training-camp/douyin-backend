@@ -2,7 +2,7 @@ services:
   mysql:
     image: mysql:latest
     ports:
-      - 3306:3306
+      - 33306:3306
     environment:
       - MYSQL_DATABASE=douyin
       - MYSQL_USER=hairline
@@ -11,5 +11,10 @@ services:
     volumes:
       - dy-mysql:/var/lib/mysql
 
+  redis:
+    image: redis:latest
+    ports:
+      - 36379:6379
+    command: redis-server --requirepass hairline
 volumes:
   dy-mysql:

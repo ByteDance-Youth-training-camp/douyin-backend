@@ -1,7 +1,11 @@
 package dal
 
-import "douyin_backend/biz/dal/mysql"
+import (
+	"douyin_backend/biz/dal/mysql"
+	"douyin_backend/biz/dal/redis"
+)
 
-func Init(){
+func Init() {
 	mysql.Init()
+	redis.Init()
 }

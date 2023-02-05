@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-var dsn = "hairline:hairline@tcp(localhost:3306)/douyin?charset=utf8&parseTime=True&loc=Local"
+var dsn = "hairline:hairline@tcp(localhost:33306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 var DB *gorm.DB
 
