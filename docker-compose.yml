@@ -16,5 +16,6 @@ services:
     ports:
       - 36379:6379
     command: redis-server --requirepass hairline
+    
 volumes:
   dy-mysql:
