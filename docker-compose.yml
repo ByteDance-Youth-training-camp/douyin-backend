@@ -1,0 +1,15 @@
+services:
+  mysql:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=douyin
+      - MYSQL_USER=hairline
+      - MYSQL_PASSWORD=hairline
+      - MYSQL_RANDOM_ROOT_PASSWORD="yes"
+    volumes:
+      - dy-mysql:/var/lib/mysql
+
+volumes:
+  dy-mysql:

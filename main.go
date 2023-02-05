@@ -3,10 +3,13 @@
 package main
 
 import (
+	"douyin_backend/biz/dal"
+
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 func main() {
+	dal.Init()
 	h := server.Default()
 
 	register(h)
