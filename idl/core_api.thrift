@@ -69,7 +69,7 @@ struct PublishListRequest{
 }
 
 struct PublishListResponse{
-    1: required status_code
+    1: required i32 status_code
     2: optional string status_msg
     3: list<api_data.Video> video_list
 }
