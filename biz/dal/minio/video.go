@@ -26,7 +26,7 @@ func InitVideoBucket() {
 }
 
 func UploadVideo(key string, video []byte) error {
-	_, err := Cli.PutObject(ctx, VideoBucket, key, bytes.NewReader(video), int64(len(video)), minio.PutObjectOptions{})
+	_, err := Cli.PutObject(ctx, VideoBucket, key, bytes.NewReader(video), int64(len(video)), minio.PutObjectOptions{ContentType: "video/mp4"})
 	if err != nil {
 		return err
 	}
