@@ -16,6 +16,18 @@ services:
     ports:
       - 36379:6379
     command: redis-server --requirepass hairline
-    
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - 9000:9000
+    environment:
+      MINIO_ACCESS_KEY: "dy_access_key"
+      MINIO_SECRET_KEY: "892dcf10-a575-11ed-ab7e-fb82e1d9a6b7"
+    volumes:
+      - minio_data:/data
+    command: server /data
+
 volumes:
   dy-mysql:
+  minio_data:
