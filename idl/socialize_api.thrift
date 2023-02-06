@@ -69,14 +69,14 @@ struct MessageActionResponse{
     2: optional string status_msg
 }
 
-service RelationService{
+service Relation{
     RelationActionResponse RelationAction(RelationActionRequest req) (api.post="/douyin/relation/action/")
     RelationFollowListResponse FollowList(RelationFollowListRequest req) (api.get="/douyin/relation/follow/list/")
     RelationFollowerListResponse FollowerList(RelationFollowerListRequest req) (api.get="/douyin/relation/follower/list/")
     RelationFriendListResponse FriendList(RelationFriendListRequest req) (ap.get="/douyin/relation/friend/list/")
 }
 
-service MessageService{
+service Message{
     MessageActionResponse MessageAction(MessageActionRequest req) (api.post="/douyin/message/action/")
     MessageChatResponse MessageChat(MessageChatRequest req) (api.get="/douyin/message/chat/")
 }

@@ -74,16 +74,16 @@ struct PublishListResponse{
     3: list<api_data.Video> video_list
 }
 
-service FeedService{
+service Feed{
     FeedResponse Feed(1:FeedRequest req)(api.get="/douyin/feed/")
 }
-service UserService{
+service User{
     UserRegisterResponse UserRegister(1:UserRegisterRequest req) (api.post="/douyin/user/register/")
     UserLoginResponse UserLogin(1:UserLoginRequest req)(api.post="/douyin/user/login/")
     UserResponse UserInfo(1:UserRequest req)(api.get="/douyin/user/")
 }
 
-service PublishService{
+service Publish{
     PublishActionResponse PublishAction(PublishActionRequest req) (api.post="/douyin/publish/action/")
     PublishListResponse PublishList(PublishListRequest req) (api.get="/douyin/publish/list/")
 }

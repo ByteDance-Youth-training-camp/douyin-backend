@@ -49,12 +49,12 @@ struct CommentListResponse{
 }
 
 
-service FavoriteService{
+service Favorite{
     FavoriteActionResponse FavoriteAction(FavoriteActionRequest req) (api.post="/douyin/favorite/action/")
     FavoriteListResponse FavoriteList(FavoriteListRequest req)(api.get="/douyin/favorite/list/")
 }
 
-service CommentService{
+service Comment{
     CommentActionResponse CommentAction(CommentActionRequest req)(api.post="/douyin/comment/action/")
     CommentListResponse CommentList(CommentListRequest req)(api.get="/douyin/comment/list/")
 }
