@@ -57,3 +57,19 @@ func FollowerList(ctx context.Context, c *app.RequestContext) {
 
 	c.JSON(consts.StatusOK, resp)
 }
+
+// FriendList .
+// @router /douyin/relation/friend/list/ [GET]
+func FriendList(ctx context.Context, c *app.RequestContext) {
+	var err error
+	var req socialize.RelationFriendListRequest
+	err = c.BindAndValidate(&req)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+
+	resp := new(socialize.RelationFriendListResponse)
+
+	c.JSON(consts.StatusOK, resp)
+}

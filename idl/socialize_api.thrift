@@ -73,7 +73,7 @@ service Relation{
     RelationActionResponse RelationAction(RelationActionRequest req) (api.post="/douyin/relation/action/")
     RelationFollowListResponse FollowList(RelationFollowListRequest req) (api.get="/douyin/relation/follow/list/")
     RelationFollowerListResponse FollowerList(RelationFollowerListRequest req) (api.get="/douyin/relation/follower/list/")
-    RelationFriendListResponse FriendList(RelationFriendListRequest req) (ap.get="/douyin/relation/friend/list/")
+    RelationFriendListResponse FriendList(RelationFriendListRequest req) (api.get="/douyin/relation/friend/list/")
 }
 
 service Message{

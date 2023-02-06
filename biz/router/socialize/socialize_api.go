@@ -50,6 +50,13 @@ func Register(r *server.Hertz) {
 					_list0.GET("/", append(_followerlistMw(), socialize.FollowerList)...)
 				}
 			}
+			{
+				_friend := _relation.Group("/friend", _friendMw()...)
+				{
+					_list1 := _friend.Group("/list", _list1Mw()...)
+					_list1.GET("/", append(_friendlistMw(), socialize.FriendList)...)
+				}
+			}
 		}
 	}
 }
