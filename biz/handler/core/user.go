@@ -6,6 +6,8 @@ import (
 	"context"
 
 	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/service"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -22,7 +24,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(core.UserRegisterResponse)
-
+	service.RegisterUser(&req, resp)
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -54,6 +56,5 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(core.UserResponse)
-
 	c.JSON(consts.StatusOK, resp)
 }
