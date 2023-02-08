@@ -3,6 +3,8 @@
 package Core
 
 import (
+	"douyin_backend/biz/mw/jwt"
+
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
@@ -17,8 +19,7 @@ func _douyinMw() []app.HandlerFunc {
 }
 
 func _feedMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{}
 }
 
 func _feed0Mw() []app.HandlerFunc {
@@ -27,8 +28,7 @@ func _feed0Mw() []app.HandlerFunc {
 }
 
 func _publishMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{jwt.Auth}
 }
 
 func _actionMw() []app.HandlerFunc {
@@ -57,8 +57,7 @@ func _userMw() []app.HandlerFunc {
 }
 
 func _userinfoMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return []app.HandlerFunc{jwt.Auth}
 }
 
 func _loginMw() []app.HandlerFunc {

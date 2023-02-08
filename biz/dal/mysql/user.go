@@ -10,7 +10,17 @@ func CreateUser(user *model.User) (*model.User, error) {
 }
 
 func FindUserByName(username string) (*model.User, error) {
-	user := model.User{Username: username}
+	user := model.User{}
+	result := DB.Where("username = ? ", username).First(&user)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &user, nil
+}
+
+// TODO( append socialization info )
+func UserInfoByID(id int64) (*model.User, error) {
+	user := model.User{ID: id}
 	result := DB.First(&user)
 	if result.Error != nil {
 		return nil, result.Error
