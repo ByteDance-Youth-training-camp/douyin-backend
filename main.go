@@ -3,14 +3,21 @@
 package main
 
 import (
+	"douyin_backend/biz/config"
 	"douyin_backend/biz/dal"
+	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
 
 func main() {
+	err := config.InitConfig("config.yml")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	dal.Init()
-	h := server.Default()
+	h := server.Default(server.WithHostPorts(config.Cfg.Hertz.HostPort))
 
 	register(h)
 	h.Spin()

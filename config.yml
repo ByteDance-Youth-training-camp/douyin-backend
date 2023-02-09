@@ -1,0 +1,14 @@
+MySql:
+  dsn: "hairline:hairline@tcp(localhost:33306)/douyin?charset=utf8&parseTime=True&loc=Local"
+
+Redis:
+  address: "localhost:36379"
+  password: "hairline"
+
+MinIO:
+  endpoint: "192.168.193.1:9000"
+  key: "dy_access_key"
+  secret: "892dcf10-a575-11ed-ab7e-fb82e1d9a6b7"
+
+Hertz:
+  host_port: "0.0.0.0:8888"

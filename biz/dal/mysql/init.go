@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"douyin_backend/biz/config"
 	"douyin_backend/biz/model"
 	"log"
 	"os"
@@ -9,8 +10,6 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
-
-var dsn = "hairline:hairline@tcp(localhost:33306)/douyin?charset=utf8&parseTime=True&loc=Local"
 
 var DB *gorm.DB
 
@@ -22,7 +21,7 @@ func Init() {
 			IgnoreRecordNotFoundError: true,
 		},
 	)
-
+	dsn := config.Cfg.MySql.Dsn
 	var err error
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		SkipDefaultTransaction: true,
