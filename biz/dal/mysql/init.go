@@ -36,4 +36,5 @@ func Init() {
 
 func migrate(db *gorm.DB) {
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Video{})
 }
