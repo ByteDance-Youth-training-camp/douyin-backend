@@ -4,8 +4,11 @@ package interact
 
 import (
 	"context"
+	"strconv"
 
 	interact "douyin_backend/biz/hertz_gen/model/interact"
+	"douyin_backend/biz/service"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -22,6 +25,44 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(interact.CommentActionResponse)
+	responseFail := func(code int, msg string) {
+		resp.StatusCode, resp.StatusMsg = -1, &msg
+		c.JSON(consts.StatusOK, resp)
+	}
+
+	id, _ := c.Get("userId") // get user id from jwt middleware
+	userid, _ := id.(string)
+	userId, err := strconv.ParseInt(userid, 10, 64)
+	if err != nil {
+		responseFail(-1, "internal error")
+		return
+	}
+
+	if req.ActionType < 1 || req.ActionType > 2 {
+		responseFail(-1, "invalid action type")
+		return
+	}
+
+	service := new(service.CommentService)
+
+	if req.ActionType == 1 { // add comment
+		comment, err := service.CreateComment(userId, req.VideoID, req.CommentText)
+
+		if err != nil {
+			responseFail(-1, "internal error")
+			return
+		}
+
+		resp.Comment = &comment
+	} else { // delete comment
+		err := service.DeleteComment(*req.CommentID)
+		if err != nil {
+			responseFail(-1, "internal error")
+			return
+		}
+	}
+
+	resp.StatusCode = 0
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -38,6 +79,30 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(interact.CommentListResponse)
+	responseFail := func(code int, msg string) {
+		resp.StatusCode, resp.StatusMsg = -1, &msg
+		c.JSON(consts.StatusOK, resp)
+	}
+
+	id, _ := c.Get("userId") // get user id from jwt middleware
+	userid, _ := id.(string)
+	userId, err := strconv.ParseInt(userid, 10, 64)
+	if err != nil {
+		responseFail(-1, "internal error")
+		return
+	}
+
+	service := new(service.CommentService)
+
+	comments, err := service.GetCommentList(req.VideoID, userId)
+
+	if err != nil {
+		responseFail(-1, "internal error")
+		return
+	}
+
+	resp.CommentList = comments
+	resp.StatusCode = 0
 
 	c.JSON(consts.StatusOK, resp)
 }

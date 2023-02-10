@@ -10,4 +10,3 @@ update_api:
 	hz update -idl idl/core_api.thrift --model_dir=biz/hertz_gen/model
 	hz update -idl idl/interact_api.thrift --model_dir=biz/hertz_gen/model
 	hz update -idl idl/socialize_api.thrift --model_dir=biz/hertz_gen/model
-

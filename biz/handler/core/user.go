@@ -6,11 +6,10 @@ import (
 	"context"
 	"time"
 
-	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
-	"douyin_backend/biz/hertz_gen/model/data"
 	"douyin_backend/biz/model"
 	"douyin_backend/biz/mw/jwt"
+	"douyin_backend/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -35,40 +34,25 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 	}
 
-	ulen, plen := len(req.Username), len(req.Password)
-	if ulen > 32 || plen > 32 || ulen < 1 || plen <= 5 {
-		responseFail(-1, "invalid username or password length")
-		return
-	}
-	// Check if username exist in database
-	if user, _ := mysql.FindUserByName(req.Username); user != nil {
-		responseFail(-1, "username already exists")
+	userService := service.UserService{}
+
+	user, err := userService.CreateUser(&model.User{Username: req.Username, Password: req.Password})
+	if err != nil {
+		responseFail(-1, err.Error())
 		return
 	}
 
-	// generate hash for password
-	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	token, err := jwt.SignUser(user.Name, time.Hour*7*24)
 	if err != nil {
 		hlog.DefaultLogger().Debug(err)
 		responseFail(-1, "internal error")
 		return
 	}
 
-	user, err := mysql.CreateUser(&model.User{Username: req.Username, Password: string(hash)})
-	if err != nil {
-		hlog.DefaultLogger().Debug(err)
-		responseFail(-1, "internal error")
-		return
-	}
-	token, err := jwt.SignUser(user.Username, time.Hour*7*24)
-	if err != nil {
-		hlog.DefaultLogger().Debug(err)
-		responseFail(-1, "internal error")
-		return
-	}
-	resp.UserID = user.ID
-	resp.StatusCode = 0
 	resp.Token = *token
+	resp.StatusCode = 0
+	resp.UserID = user.ID
+
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -82,15 +66,16 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	userService := service.UserService{}
 	resp := new(core.UserLoginResponse)
-	dbUser, err := mysql.FindUserByName(req.Username)
+	dbUser, err := userService.GetUserByName(req.Username)
 	if err != nil || bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(req.Password)) != nil {
 		msg := "wrong username or password"
 		resp.StatusCode, resp.StatusMsg = -1, &msg
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
+
 	token, err := jwt.SignUser(req.Username, time.Hour*7*24)
 	if err != nil {
 		msg := "internal error"
@@ -98,9 +83,11 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusInternalServerError, resp)
 		return
 	}
+
 	resp.Token = *token
-	resp.UserID = dbUser.ID
 	resp.StatusCode = 0
+	resp.UserID = dbUser.ID
+
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -114,18 +101,15 @@ func UserInfo(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	userService := service.UserService{}
 	resp := new(core.UserResponse)
-	user, err := mysql.UserInfoByID(req.UserID)
+	user, err := userService.GetUserById(req.UserID)
 	if err != nil {
 		msg := "user not found"
 		resp.StatusCode, resp.StatusMsg = -1, &msg
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	resp.User = &data.User{
-		ID:   user.ID,
-		Name: user.Username,
-	}
+	resp.User = &user
 	c.JSON(consts.StatusOK, resp)
 }
