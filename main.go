@@ -5,9 +5,12 @@ package main
 import (
 	"douyin_backend/biz/config"
 	"douyin_backend/biz/dal"
+	"douyin_backend/biz/dal/minio"
 	"fmt"
+	"time"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 )
 
 func main() {
@@ -16,9 +19,10 @@ func main() {
 		fmt.Println(err)
 		return
 	}
+	hlog.SetLevel(hlog.LevelTrace)
 	dal.Init()
-	h := server.Default(server.WithHostPorts(config.Cfg.Hertz.HostPort))
-
+	h := server.Default(server.WithHostPorts(config.Cfg.Hertz.HostPort), server.WithMaxRequestBodySize(128*1024*1024))
+	fmt.Println(minio.GetVideoUrl("test", 1*time.Hour))
 	register(h)
 	h.Spin()
 }

@@ -4,9 +4,13 @@ package core
 
 import (
 	"context"
+	"fmt"
 
+	"douyin_backend/biz/dal/minio"
 	core "douyin_backend/biz/hertz_gen/model/core"
+
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
 
@@ -16,13 +20,34 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req core.PublishActionRequest
 	err = c.BindAndValidate(&req)
+
 	if err != nil {
+		hlog.Debug(err)
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
+	file_header, err := c.FormFile("data")
+	if err != nil {
+		hlog.Debug(err)
+		c.String(consts.StatusOK, err.Error())
+		return
+	}
 
+	file, err := file_header.Open()
+	if err != nil {
+		hlog.Debug(err)
+		c.String(consts.StatusOK, err.Error())
+		return
+	}
+	
+	for k, v := range file_header.Header {
+		fmt.Println(k, v)
+	}
 	resp := new(core.PublishActionResponse)
+	minio.UploadVideo("test", file, file_header.Size)
+	fmt.Println(string(c.Request.Header.ContentType()))
 
+	resp.StatusCode = 0
 	c.JSON(consts.StatusOK, resp)
 }
 

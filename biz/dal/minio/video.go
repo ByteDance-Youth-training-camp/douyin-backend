@@ -1,7 +1,7 @@
 package minio
 
 import (
-	"bytes"
+	"io"
 	"log"
 	"net/url"
 	"time"
@@ -12,12 +12,12 @@ import (
 var VideoBucket = "videos"
 
 func InitVideoBucket() {
-	ok, err := Cli.BucketExists(ctx, "test-bucket")
+	ok, err := Cli.BucketExists(ctx, VideoBucket)
 	if err != nil {
 		log.Fatal(err)
 	}
 	if !ok {
-		err = Cli.MakeBucket(ctx, "test-bucket", minio.MakeBucketOptions{})
+		err = Cli.MakeBucket(ctx, VideoBucket, minio.MakeBucketOptions{})
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -25,8 +25,9 @@ func InitVideoBucket() {
 
 }
 
-func UploadVideo(key string, video []byte) error {
-	_, err := Cli.PutObject(ctx, VideoBucket, key, bytes.NewReader(video), int64(len(video)), minio.PutObjectOptions{ContentType: "video/mp4"})
+func UploadVideo(key string, video io.Reader, size int64) error {
+
+	_, err := Cli.PutObject(ctx, VideoBucket, key, video, size, minio.PutObjectOptions{ContentType: "video/mp4"})
 	if err != nil {
 		return err
 	}

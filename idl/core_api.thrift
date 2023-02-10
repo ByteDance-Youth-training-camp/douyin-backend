@@ -53,8 +53,8 @@ struct UserResponse{
 
 struct PublishActionRequest {
     1: required string token // 用户鉴权token
-    2: required binary data // 视频数据
-    3: required string title // 视频标题
+    // 2: required binary data // 视频数据
+    2: required string title // 视频标题
 }
 
 

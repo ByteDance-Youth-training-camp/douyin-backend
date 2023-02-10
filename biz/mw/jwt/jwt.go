@@ -60,8 +60,8 @@ type token struct {
 func Auth(ctx context.Context, c *app.RequestContext) {
 	abort := func(err error) {
 		hlog.DefaultLogger().Debug(err)
-		c.JSON(consts.StatusUnauthorized, map[string]interface{}{
-			"status_code": consts.StatusUnauthorized,
+		c.JSON(consts.StatusOK, map[string]interface{}{
+			"status_code": consts.StatusOK,
 			"status_msg":  "authorization error",
 		})
 	}

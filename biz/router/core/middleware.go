@@ -4,13 +4,14 @@ package Core
 
 import (
 	"douyin_backend/biz/mw/jwt"
+	"douyin_backend/biz/mw/mwlog"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{mwlog.AccessLog()}
 }
 
 func _douyinMw() []app.HandlerFunc {
