@@ -4,8 +4,11 @@ package interact
 
 import (
 	"context"
+	"strconv"
 
 	interact "douyin_backend/biz/hertz_gen/model/interact"
+	"douyin_backend/biz/service"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -22,6 +25,41 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(interact.FavoriteActionResponse)
+	responseFail := func(code int, msg string) {
+		resp.StatusCode, resp.StatusMsg = -1, &msg
+		c.JSON(consts.StatusOK, resp)
+	}
+
+	id, _ := c.Get("userId") // get user id from jwt middleware
+	userid, _ := id.(string)
+	userId, err := strconv.ParseInt(userid, 10, 64)
+	if err != nil {
+		responseFail(-1, "internal error")
+		return
+	}
+
+	if req.ActionType < 1 || req.ActionType > 2 {
+		responseFail(-1, "invalid action type")
+		return
+	}
+
+	service := new(service.FavoriteService)
+
+	if req.ActionType == 1 { // add comment
+		err := service.AddFavorite(userId, req.VideoID)
+		if err != nil {
+			responseFail(-1, "internal error")
+			return
+		}
+	} else { // delete comment
+		err := service.RemoveFavorite(userId, req.VideoID)
+		if err != nil {
+			responseFail(-1, "internal error")
+			return
+		}
+	}
+
+	resp.StatusCode = 0
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -38,6 +76,19 @@ func FavoriteList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(interact.FavoriteListResponse)
+
+	service := new(service.FavoriteService)
+
+	list, err := service.GetFavoriteList(req.UserID)
+	if err != nil {
+		msg := err.Error()
+		resp.StatusCode, resp.StatusMsg = -1, &msg
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
+	resp.StatusCode = 0
+	resp.VideoList = list
 
 	c.JSON(consts.StatusOK, resp)
 }

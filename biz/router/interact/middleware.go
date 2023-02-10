@@ -3,6 +3,8 @@
 package Interact
 
 import (
+	"douyin_backend/biz/mw/jwt"
+
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
@@ -18,7 +20,7 @@ func _douyinMw() []app.HandlerFunc {
 
 func _commentMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{jwt.Auth}
 }
 
 func _actionMw() []app.HandlerFunc {
@@ -43,7 +45,7 @@ func _commentlistMw() []app.HandlerFunc {
 
 func _favoriteMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{jwt.Auth}
 }
 
 func _action0Mw() []app.HandlerFunc {
