@@ -7,6 +7,7 @@
 - thumbnailer dependencies:
   - pkg-config
   - ffmpeg
+  - c11 compiler
 
 ### 启动方式
 启动前需要修改minio的host为客户端可访问的外部地址

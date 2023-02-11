@@ -79,6 +79,15 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(core.PublishListResponse)
+	uid := req.UserID
+	vlist, err := mysql.UserVideoList(uid)
+	if err != nil {
+		resp.StatusCode = -1
+		c.JSON(consts.StatusInternalServerError, resp)
+		return
+	}
 
+	resp.StatusCode = 0
+	resp.VideoList = video.PackVideoList(vlist)
 	c.JSON(consts.StatusOK, resp)
 }

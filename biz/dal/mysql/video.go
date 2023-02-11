@@ -22,3 +22,9 @@ func VideoFeed(latest_time *int64) ([]model.Video, error) {
 	result = result.Where("ready = true").Order("upload_time desc").Limit(30).Find(&videos)
 	return videos, result.Error
 }
+
+func UserVideoList(uid int64) ([]model.Video, error) {
+	videos := make([]model.Video, 0)
+	result := DB.Where("user_id = ?", uid).Where("ready = true").Order("upload_time desc").Find(&videos)
+	return videos, result.Error
+}
