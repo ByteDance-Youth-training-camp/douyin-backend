@@ -6,7 +6,7 @@ import (
 	"context"
 	"strconv"
 
-	interact "douyin_backend/biz/hertz_gen/model/interact"
+	"douyin_backend/biz/hertz_gen/model/interact"
 	"douyin_backend/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app"

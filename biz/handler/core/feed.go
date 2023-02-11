@@ -4,10 +4,13 @@ package core
 
 import (
 	"context"
-
-	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/dal/minio"
+	"douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/hertz_gen/model/data"
 	"github.com/cloudwego/hertz/pkg/app"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"time"
 )
 
 // Feed .
@@ -22,6 +25,26 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(core.FeedResponse)
+
+	url, err := minio.GetVideoUrl("test", 1*time.Hour)
+	if err != nil {
+		hlog.Debug(err)
+		c.String(consts.StatusOK, err.Error())
+		return
+	}
+
+	resp.VideoList = make([]*data.Video, 0)
+	resp.StatusCode = 0
+	resp.VideoList = append(resp.VideoList, &data.Video{
+		ID:            0,
+		Author:        &data.User{},
+		PlayURL:       url.String(),
+		CoverURL:      "",
+		FavoriteCount: 0,
+		CommentCount:  0,
+		IsFavorite:    false,
+		Title:         "Test",
+	})
 
 	c.JSON(consts.StatusOK, resp)
 }

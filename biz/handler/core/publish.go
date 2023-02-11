@@ -4,10 +4,9 @@ package core
 
 import (
 	"context"
-	"fmt"
-
 	"douyin_backend/biz/dal/minio"
-	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/hertz_gen/model/core"
+	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -39,7 +38,7 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusOK, err.Error())
 		return
 	}
-	
+
 	for k, v := range file_header.Header {
 		fmt.Println(k, v)
 	}

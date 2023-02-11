@@ -6,7 +6,7 @@ import (
 	"context"
 	"strconv"
 
-	interact "douyin_backend/biz/hertz_gen/model/interact"
+	"douyin_backend/biz/hertz_gen/model/interact"
 	"douyin_backend/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app"
@@ -34,7 +34,7 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	userid, _ := id.(string)
 	userId, err := strconv.ParseInt(userid, 10, 64)
 	if err != nil {
-		responseFail(-1, "internal error")
+		responseFail(-1, "internal error: Unable to parse user id")
 		return
 	}
 
@@ -48,13 +48,13 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 	if req.ActionType == 1 { // add comment
 		err := service.AddFavorite(userId, req.VideoID)
 		if err != nil {
-			responseFail(-1, "internal error")
+			responseFail(-1, "internal error: Unable to add")
 			return
 		}
 	} else { // delete comment
 		err := service.RemoveFavorite(userId, req.VideoID)
 		if err != nil {
-			responseFail(-1, "internal error")
+			responseFail(-1, "internal error: Unable to delete")
 			return
 		}
 	}

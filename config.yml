@@ -6,9 +6,12 @@ Redis:
   password: "hairline"
 
 MinIO:
-  endpoint: "192.168.193.1:9000"
+  endpoint: "localhost:9000"
   key: "dy_access_key"
   secret: "892dcf10-a575-11ed-ab7e-fb82e1d9a6b7"
 
 Hertz:
   host_port: "0.0.0.0:8888"
+
+Jwt:
+  secret: "testSecret"

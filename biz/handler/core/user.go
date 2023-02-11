@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/hertz_gen/model/core"
 	"douyin_backend/biz/model"
 	"douyin_backend/biz/mw/jwt"
 	"douyin_backend/biz/service"
@@ -42,7 +42,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	token, err := jwt.SignUser(user.Name, time.Hour*7*24)
+	token, err := jwt.SignUser(user.ID, user.Name, time.Hour*7*24)
 	if err != nil {
 		hlog.DefaultLogger().Debug(err)
 		responseFail(-1, "internal error")
@@ -76,7 +76,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	token, err := jwt.SignUser(req.Username, time.Hour*7*24)
+	token, err := jwt.SignUser(dbUser.ID, req.Username, time.Hour*7*24)
 	if err != nil {
 		msg := "internal error"
 		resp.StatusCode, resp.StatusMsg = -1, &msg
