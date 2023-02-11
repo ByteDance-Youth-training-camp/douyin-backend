@@ -2,12 +2,12 @@ package video
 
 import (
 	"douyin_backend/biz/dal/minio"
-	"douyin_backend/biz/dal/mysql"
+	"douyin_backend/biz/hertz_gen/model/data"
+	"douyin_backend/biz/model"
 	"fmt"
-	"image/jpeg"
 	"io"
+	"time"
 
-	"github.com/bakape/thumbnailer/v2"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 )
 
@@ -17,20 +17,8 @@ type Video struct {
 	Vid     int64
 }
 
-func init() {
-	go coverGenerator()
-}
-
-type coverGenTask struct {
-	vid  int64
-	vkey string
-}
-
-var coverQueSize = 1024
-var coverQue = make(chan coverGenTask, coverQueSize)
-
 func UploadVideo(video *Video) error {
-	key := GenVKey(video.Vid)
+	key := genVkey(video.Vid)
 
 	err := minio.UploadVideo(key, video.FReader, video.Size)
 	if err != nil {
@@ -40,52 +28,52 @@ func UploadVideo(video *Video) error {
 	return nil
 }
 
-func GenVKey(vid int64) string {
+func genVkey(vid int64) string {
 	return fmt.Sprintf("video%d", vid)
 }
 
-func coverGenerator() {
-	hlog.Info("Start cover generator ")
-	for task := range coverQue {
-		func() {
-			obj, err := minio.GetVideoObject(task.vkey)
-			if err != nil {
-				hlog.Error(err)
-				return
-			}
-			defer obj.Close()
-
-			_, thumb, err := thumbnailer.Process(obj, thumbnailer.Options{
-				// 0,0 => default size 150 by 150
-				ThumbDims: thumbnailer.Dims{Width: 320, Height: 320},
-			})
-			if err != nil && err != io.EOF {
-				hlog.Error(err)
-				return
-			}
-
-			imgReader, imgWriter := io.Pipe()
-			defer imgReader.Close()
-			go func() {
-				defer imgWriter.Close()
-				if err := jpeg.Encode(imgWriter, thumb, nil); err != nil {
-					hlog.Error(err)
-				}
-			}()
-			// use same key among different buckets
-			imgKey := task.vkey
-
-			if err := minio.UploadImage(imgKey, imgReader, -1); err != nil {
-				hlog.Error(err)
-				return
-			}
-
-			// update database
-			if err := mysql.UpdateVideoKeys(task.vid, task.vkey, imgKey); err != nil {
-				hlog.Error(err)
-				return
-			}
-		}()
+func PackVideoList(mvlist []model.Video) []*data.Video {
+	dvlist := make([]*data.Video, len(mvlist))
+	for i, _ := range mvlist {
+		dvlist[i] = packVideo(&mvlist[i])
 
 	}
+	return dvlist
+}
+
+func packVideo(mv *model.Video) *data.Video {
+
+	dv := data.Video{
+		ID:    mv.ID,
+		Title: mv.Title,
+	}
+	dv.Author = packUser(&mv.User)
+	play_url, err := minio.GetVideoUrl(mv.VideoKey, time.Hour)
+	if err != nil {
+		hlog.Debug(err)
+	} else {
+		dv.PlayURL = play_url.String()
+	}
+	cover_url, err := minio.GetImageUrl(mv.CoverKey, time.Hour)
+	if err != nil {
+		hlog.Debug(err)
+	} else {
+		dv.CoverURL = cover_url.String()
+	}
+	dv.Author = packUser(&mv.User)
+	// TODO( commentCount, favoriteCount, IsFavorite)
+	return &dv
+
+}
+
+func packUser(user *model.User) *data.User {
+	duser := data.User{
+		ID:            user.ID,
+		Name:          user.Username,
+		FollowCount:   new(int64),
+		FollowerCount: new(int64),
+		IsFollow:      false,
+	}
+	// TODO(Follow & Follower)
+	return &duser
 }

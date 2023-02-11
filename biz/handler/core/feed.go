@@ -5,7 +5,10 @@ package core
 import (
 	"context"
 
+	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/service/video"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -22,6 +25,19 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(core.FeedResponse)
+
+	vlist, err := mysql.VideoFeed(req.LatestTime)
+	if err != nil {
+		c.String(consts.StatusBadRequest, err.Error())
+		return
+	}
+	if len(vlist) == 0 {
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+	lastTime := vlist[len(vlist)-1].UploadTime
+	resp.VideoList = video.PackVideoList(vlist)
+	resp.NextTime = &lastTime
 
 	c.JSON(consts.StatusOK, resp)
 }
