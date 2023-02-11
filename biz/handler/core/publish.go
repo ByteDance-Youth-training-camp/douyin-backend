@@ -4,10 +4,11 @@ package core
 
 import (
 	"context"
-	"fmt"
 
-	"douyin_backend/biz/dal/minio"
+	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
+	"douyin_backend/biz/model"
+	"douyin_backend/biz/service/video"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -26,26 +27,41 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
+	resp := new(core.PublishActionResponse)
+	responseFail := func(code int32, msg string, err error) {
+		hlog.Debug(err)
+		resp.StatusCode, resp.StatusMsg = code, &msg
+		c.JSON(consts.StatusOK, resp)
+	}
+
 	file_header, err := c.FormFile("data")
 	if err != nil {
-		hlog.Debug(err)
-		c.String(consts.StatusOK, err.Error())
+		responseFail(-1, "get filedata error", err)
 		return
 	}
 
 	file, err := file_header.Open()
 	if err != nil {
-		hlog.Debug(err)
-		c.String(consts.StatusOK, err.Error())
+		responseFail(-1, "open filestream error", err)
 		return
 	}
-	
-	for k, v := range file_header.Header {
-		fmt.Println(k, v)
+	defer file.Close()
+
+	uid := c.GetInt64("uid")
+	if uid == 0 {
+		// jwtAuth middleware will set uid for each publish request
+		panic("should not reach here")
 	}
-	resp := new(core.PublishActionResponse)
-	minio.UploadVideo("test", file, file_header.Size)
-	fmt.Println(string(c.Request.Header.ContentType()))
+	v, err := mysql.CreateVideo(&model.Video{Title: req.Title, UserID: uid})
+	if err != nil {
+		responseFail(-1, "create video record error", err)
+		return
+	}
+
+	if err := video.UploadVideo(&video.Video{FReader: file, Size: file_header.Size, Vid: v.ID}); err != nil {
+		responseFail(-1, "upload video failed", err)
+		return
+	}
 
 	resp.StatusCode = 0
 	c.JSON(consts.StatusOK, resp)

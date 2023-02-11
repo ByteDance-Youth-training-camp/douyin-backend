@@ -25,5 +25,20 @@ func Init() {
 		log.Fatalln(err)
 	}
 
-	InitVideoBucket()
+	InitBucket(VideoBucket)
+	InitBucket(ImageBucket)
+}
+
+func InitBucket(bucket string) {
+	ok, err := Cli.BucketExists(ctx, bucket)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !ok {
+		err = Cli.MakeBucket(ctx, bucket, minio.MakeBucketOptions{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 }

@@ -2,35 +2,27 @@ package minio
 
 import (
 	"io"
-	"log"
 	"net/url"
 	"time"
 
+	"github.com/cloudwego/hertz/pkg/common/hlog"
 	"github.com/minio/minio-go/v7"
 )
 
 var VideoBucket = "videos"
 
-func InitVideoBucket() {
-	ok, err := Cli.BucketExists(ctx, VideoBucket)
-	if err != nil {
-		log.Fatal(err)
-	}
-	if !ok {
-		err = Cli.MakeBucket(ctx, VideoBucket, minio.MakeBucketOptions{})
-		if err != nil {
-			log.Fatal(err)
-		}
-	}
-
+func GetVideoObject(key string) (*minio.Object, error) {
+	return Cli.GetObject(ctx, VideoBucket, key, minio.GetObjectOptions{})
 }
 
 func UploadVideo(key string, video io.Reader, size int64) error {
 
 	_, err := Cli.PutObject(ctx, VideoBucket, key, video, size, minio.PutObjectOptions{ContentType: "video/mp4"})
 	if err != nil {
+		hlog.Error(err)
 		return err
 	}
+	hlog.Info("uploaded video with key ", key)
 	return nil
 }
 

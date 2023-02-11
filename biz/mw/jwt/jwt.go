@@ -23,32 +23,43 @@ nbf: 定义在什么时间之前，该jwt都是不可用的.就是这条token信
 sub: jwt所面向的用户
 */
 
-func SignUser(username string, expired time.Duration) (*string, error) {
+type uClaims struct {
+	Uid int64 `json:"uid"`
+	jwt.RegisteredClaims
+}
+
+func SignUser(uid int64, expired time.Duration) (*string, error) {
 	// Create a JWT token with claims and signing method
-	claim := jwt.StandardClaims{
-		Audience:  username,
-		ExpiresAt: time.Now().Unix() + int64(expired.Seconds()),
-		IssuedAt:  time.Now().Unix(),
+	claim := uClaims{
+		uid,
+		jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expired)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	signedToken, err := token.SignedString(Secret)
 	if err != nil {
-		hlog.DefaultLogger().Warn("sign jwt token failed", err)
+		hlog.Warn("sign jwt token failed", err)
 		return nil, err
 	}
+
 	return &signedToken, nil
 }
 
-func ExtractClaims(signedToken string) (jwt.MapClaims, error) {
-	decodedToken, err := jwt.Parse(signedToken, func(token *jwt.Token) (interface{}, error) {
+func ExtractClaims(signedToken string) (*uClaims, error) {
+	decodedToken, err := jwt.ParseWithClaims(signedToken, &uClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return Secret, nil
 	})
 	if err != nil {
 		return nil, err
 	}
-	claims, ok := decodedToken.Claims.(jwt.MapClaims)
-	if !ok || !decodedToken.Valid {
-		return nil, errors.New("Decode jwt token faild or invalid token")
+	if !decodedToken.Valid {
+		return nil, errors.New("invalid token")
+	}
+	claims, ok := decodedToken.Claims.(*uClaims)
+	if !ok {
+		return nil, errors.New("jwt claims type error")
 	}
 	return claims, nil
 }
@@ -59,11 +70,12 @@ type token struct {
 
 func Auth(ctx context.Context, c *app.RequestContext) {
 	abort := func(err error) {
-		hlog.DefaultLogger().Debug(err)
+		hlog.Debug(err)
 		c.JSON(consts.StatusOK, map[string]interface{}{
 			"status_code": consts.StatusOK,
 			"status_msg":  "authorization error",
 		})
+		c.Abort()
 	}
 
 	tk := token{}
@@ -77,7 +89,6 @@ func Auth(ctx context.Context, c *app.RequestContext) {
 		abort(err)
 		return
 	}
-	username := claims["aud"]
-	c.Set("username", username)
+	c.Set("uid", claims.Uid)
 	c.Next(ctx)
 }
