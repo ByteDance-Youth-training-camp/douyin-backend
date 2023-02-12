@@ -7,7 +7,7 @@ import (
 
 	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
-	"douyin_backend/biz/service/video"
+	"douyin_backend/biz/service/videoservice"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -36,7 +36,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	lastTime := vlist[len(vlist)-1].UploadTime
-	resp.VideoList = video.PackVideoList(vlist)
+	resp.VideoList = videoservice.PackVideoList(vlist)
 	resp.NextTime = &lastTime
 
 	c.JSON(consts.StatusOK, resp)

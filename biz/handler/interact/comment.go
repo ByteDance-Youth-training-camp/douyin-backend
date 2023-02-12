@@ -4,7 +4,6 @@ package interact
 
 import (
 	"context"
-	"strconv"
 
 	"douyin_backend/biz/hertz_gen/model/interact"
 	"douyin_backend/biz/service"
@@ -30,9 +29,7 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 	}
 
-	id, _ := c.Get("userId") // get user id from jwt middleware
-	userid, _ := id.(string)
-	userId, err := strconv.ParseInt(userid, 10, 64)
+	userId := c.GetInt64("uid")
 	if err != nil {
 		responseFail(-1, "internal error")
 		return
@@ -84,9 +81,7 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 	}
 
-	id, _ := c.Get("userId") // get user id from jwt middleware
-	userid, _ := id.(string)
-	userId, err := strconv.ParseInt(userid, 10, 64)
+	userId := c.GetInt64("uid")
 	if err != nil {
 		responseFail(-1, "internal error")
 		return

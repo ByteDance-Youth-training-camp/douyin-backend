@@ -8,7 +8,7 @@ import (
 	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
 	"douyin_backend/biz/model"
-	"douyin_backend/biz/service/video"
+	"douyin_backend/biz/service/videoservice"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -58,7 +58,7 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	if err := video.UploadVideo(&video.Video{FReader: file, Size: file_header.Size, Vid: v.ID}); err != nil {
+	if err := videoservice.UploadVideo(&videoservice.Video{FReader: file, Size: file_header.Size, Vid: v.ID}); err != nil {
 		responseFail(-1, "upload video failed", err)
 		return
 	}
@@ -88,6 +88,6 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp.StatusCode = 0
-	resp.VideoList = video.PackVideoList(vlist)
+	resp.VideoList = videoservice.PackVideoList(vlist)
 	c.JSON(consts.StatusOK, resp)
 }

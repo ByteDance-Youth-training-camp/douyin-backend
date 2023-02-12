@@ -1,6 +1,7 @@
 package config
 
 import (
+	"douyin_backend/biz/mw/jwt"
 	"io/ioutil"
 
 	"gopkg.in/yaml.v3"
@@ -38,5 +39,6 @@ func InitConfig(filepath string) error {
 	if err != nil {
 		return err
 	}
+	jwt.Secret = []byte(Cfg.Jwt.Secret)
 	return nil
 }

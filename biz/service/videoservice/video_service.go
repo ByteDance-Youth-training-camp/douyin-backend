@@ -1,4 +1,4 @@
-package video
+package videoservice
 
 import (
 	"douyin_backend/biz/dal/minio"
