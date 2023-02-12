@@ -20,7 +20,7 @@ func _douyinMw() []app.HandlerFunc {
 }
 
 func _feedMw() []app.HandlerFunc {
-	return []app.HandlerFunc{}
+	return []app.HandlerFunc{jwt.Uid}
 }
 
 func _feed0Mw() []app.HandlerFunc {

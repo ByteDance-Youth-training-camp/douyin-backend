@@ -48,7 +48,7 @@ func SignUser(uid int64, expired time.Duration) (*string, error) {
 }
 
 func ExtractClaims(signedToken string) (*uClaims, error) {
-	
+
 	decodedToken, err := jwt.ParseWithClaims(signedToken, &uClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return Secret, nil
 	})
@@ -70,25 +70,25 @@ type token struct {
 }
 
 func Auth(ctx context.Context, c *app.RequestContext) {
-	abort := func(err error) {
-		hlog.Debug(err)
+	Uid(ctx, c)
+	if c.GetInt64("uid") == 0 {
 		c.JSON(consts.StatusOK, map[string]interface{}{
-			"status_code": consts.StatusUnauthorized,
+			"status_code": consts.StatusOK,
 			"status_msg":  "authorization error",
 		})
 		c.Abort()
 	}
+	c.Next(ctx)
+}
 
+func Uid(ctx context.Context, c *app.RequestContext) {
 	tk := token{}
 	err := c.Bind(&tk)
 	if err != nil {
-		abort(err)
 		return
 	}
-	
 	claims, err := ExtractClaims(tk.Token)
 	if err != nil {
-		abort(err)
 		return
 	}
 	c.Set("uid", claims.Uid)

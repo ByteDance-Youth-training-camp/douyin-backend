@@ -2,6 +2,7 @@ package videoservice
 
 import (
 	"douyin_backend/biz/dal/minio"
+	"douyin_backend/biz/dal/redis"
 	"douyin_backend/biz/hertz_gen/model/data"
 	"douyin_backend/biz/model"
 	"fmt"
@@ -34,7 +35,7 @@ func genVkey(vid int64) string {
 
 func PackVideoList(mvlist []model.Video) []*data.Video {
 	dvlist := make([]*data.Video, len(mvlist))
-	for i, _ := range mvlist {
+	for i := range mvlist {
 		dvlist[i] = packVideo(&mvlist[i])
 
 	}
@@ -42,7 +43,9 @@ func PackVideoList(mvlist []model.Video) []*data.Video {
 }
 
 func packVideo(mv *model.Video) *data.Video {
-
+	if v := redis.GetVideoInfo(mv.ID); v != nil {
+		return v
+	}
 	dv := data.Video{
 		ID:    mv.ID,
 		Title: mv.Title,
@@ -62,6 +65,7 @@ func packVideo(mv *model.Video) *data.Video {
 	}
 	dv.Author = packUser(&mv.User)
 	// TODO( commentCount, favoriteCount, IsFavorite)
+	redis.SetVideoInfo(&dv, time.Minute)
 	return &dv
 
 }
@@ -74,6 +78,7 @@ func packUser(user *model.User) *data.User {
 		FollowerCount: new(int64),
 		IsFollow:      false,
 	}
+
 	// TODO(Follow & Follower)
 	return &duser
 }

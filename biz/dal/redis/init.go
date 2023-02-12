@@ -8,14 +8,19 @@ import (
 )
 
 var Ctx = context.Background()
-var RDB *redis.Client
+var video_cache *redis.Client
+
+const (
+	video_info = iota
+)
 
 func Init() {
 
 	rdcfg := &config.Cfg.Redis
-	RDB = redis.NewClient(&redis.Options{
+	video_cache = redis.NewClient(&redis.Options{
 		Addr:     rdcfg.Address,
 		Password: rdcfg.Password,
-		DB:       0,
+		DB:       video_info,
 	})
+	video_cache.FlushDB(Ctx)
 }

@@ -32,6 +32,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	if len(vlist) == 0 {
+		resp.NextTime = req.LatestTime
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
