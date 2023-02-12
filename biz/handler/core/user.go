@@ -49,20 +49,20 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	// generate hash for password
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		hlog.DefaultLogger().Debug(err)
+		hlog.Debug(err)
 		responseFail(-1, "internal error")
 		return
 	}
 
 	user, err := mysql.CreateUser(&model.User{Username: req.Username, Password: string(hash)})
 	if err != nil {
-		hlog.DefaultLogger().Debug(err)
+		hlog.Debug(err)
 		responseFail(-1, "internal error")
 		return
 	}
 	token, err := jwt.SignUser(user.ID, time.Hour*7*24)
 	if err != nil {
-		hlog.DefaultLogger().Debug(err)
+		hlog.Debug(err)
 		responseFail(-1, "internal error")
 		return
 	}
