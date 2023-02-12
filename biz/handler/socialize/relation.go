@@ -5,7 +5,7 @@ package socialize
 import (
 	"context"
 
-	socialize "douyin_backend/biz/hertz_gen/model/socialize"
+	"douyin_backend/biz/hertz_gen/model/socialize"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )

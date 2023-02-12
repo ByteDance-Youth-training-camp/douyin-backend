@@ -22,6 +22,9 @@ type Config struct {
 	Hertz struct {
 		HostPort string `yaml:"host_port"`
 	} `yaml:"Hertz"`
+	Jwt struct {
+		Secret string `yaml:"secret"`
+	} `yaml:"Jwt"`
 }
 
 var Cfg Config
