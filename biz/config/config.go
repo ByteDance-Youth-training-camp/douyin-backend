@@ -2,7 +2,7 @@ package config
 
 import (
 	"douyin_backend/biz/mw/jwt"
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v3"
 )
@@ -24,14 +24,15 @@ type Config struct {
 		HostPort string `yaml:"host_port"`
 	} `yaml:"Hertz"`
 	Jwt struct {
-		Secret string `yaml:"secret"`
+		Secret  string `yaml:"secret"`
+		Expired int64  `yaml:"expired"`
 	} `yaml:"Jwt"`
 }
 
 var Cfg Config
 
 func InitConfig(filepath string) error {
-	file, err := ioutil.ReadFile(filepath)
+	file, err := os.ReadFile(filepath)
 	if err != nil {
 		return err
 	}

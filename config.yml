@@ -15,3 +15,4 @@ Hertz:
 
 Jwt:
   secret: "testSecret"
+  expired: 10080

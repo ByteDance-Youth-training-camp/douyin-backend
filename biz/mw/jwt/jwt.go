@@ -30,11 +30,15 @@ type uClaims struct {
 
 func SignUser(uid int64, expired time.Duration) (*string, error) {
 	// Create a JWT token with claims and signing method
+	time := time.Now()
 	claim := uClaims{
 		uid,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expired)),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			ExpiresAt: jwt.NewNumericDate(time.Add(expired)),
+			IssuedAt:  jwt.NewNumericDate(time),
+			NotBefore: jwt.NewNumericDate(time),
+			Issuer:    "mini-tiktok",
+			Subject:   "user-token",
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
