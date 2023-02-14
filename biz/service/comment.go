@@ -4,6 +4,7 @@ import (
 	"douyin_backend/biz/dal/mysql"
 	"douyin_backend/biz/hertz_gen/model/data"
 	"douyin_backend/biz/model"
+	"douyin_backend/biz/service/userservice"
 	"time"
 )
 
@@ -22,9 +23,7 @@ func (s *CommentService) CreateComment(userId int64, videoId int64, content *str
 		return data.Comment{}, err
 	}
 
-	userService := UserService{}
-
-	user, err := userService.GetUserById(userId)
+	user, err := userservice.GetUserById(userId)
 
 	if err != nil {
 		return data.Comment{}, err
@@ -49,12 +48,10 @@ func (s *CommentService) GetCommentList(videoId int64, userId int64) ([]*data.Co
 		return nil, err
 	}
 
-	userService := UserService{}
-
 	var commentList []*data.Comment
 
 	for _, comment := range comments {
-		user, err := userService.GetUserById(comment.UserId)
+		user, err := userservice.GetUserById(comment.UserId)
 
 		if err != nil {
 			return nil, err

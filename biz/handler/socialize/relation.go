@@ -5,9 +5,8 @@ package socialize
 import (
 	"context"
 
-	"douyin_backend/biz/dal/mysql"
 	"douyin_backend/biz/hertz_gen/model/socialize"
-	"douyin_backend/biz/model"
+	"douyin_backend/biz/service/relationservice"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -39,21 +38,19 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 	if req.ActionType == 1 {
 		// Follow
 		// Check if user has already followed
-		if _, err := mysql.FindFollow(req.ToUserID, uid); err == nil {
-			responseFail(-1, "user has already followed")
+		if err := relationservice.Follow(uid, req.ToUserID); err == nil {
+			responseFail(-1, err.Error())
 			return
 		}
-		mysql.Follow(&model.Follow{UserId: req.ToUserID, FollowerId: uid, Canceled: false})
 	}
 
 	if req.ActionType == 2 {
 		// Unfollow
 		// Check if user has already followed
-		if _, err := mysql.FindFollow(req.ToUserID, uid); err != nil {
-			responseFail(-1, "user has not followed")
+		if err := relationservice.Unfollow(uid, req.ToUserID); err != nil {
+			responseFail(-1, err.Error())
 			return
 		}
-		mysql.Unfollow(req.ToUserID, uid)
 	}
 
 	resp.StatusCode = 0
@@ -75,7 +72,7 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(socialize.RelationFollowListResponse)
 
-	list, err := mysql.GetFollowList(req.UserID)
+	list, err := relationservice.GetFollowings(req.UserID)
 
 	if err != nil {
 		resp.StatusCode = -1
@@ -105,7 +102,7 @@ func FollowerList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(socialize.RelationFollowerListResponse)
 
-	list, err := mysql.GetFollowerList(req.UserID)
+	list, err := relationservice.GetFollowers(req.UserID)
 
 	if err != nil {
 		resp.StatusCode = -1

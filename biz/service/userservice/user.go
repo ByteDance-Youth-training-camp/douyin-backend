@@ -1,4 +1,4 @@
-package service
+package userservice
 
 import (
 	"douyin_backend/biz/dal/mysql"
@@ -13,7 +13,7 @@ import (
 type UserService struct {
 }
 
-func (s *UserService) GetUserById(id int64) (data.User, error) {
+func GetUserById(id int64) (data.User, error) {
 	user, err := mysql.UserInfoByID(id)
 	if err != nil {
 		return data.User{}, err
@@ -24,7 +24,7 @@ func (s *UserService) GetUserById(id int64) (data.User, error) {
 	}, nil
 }
 
-func (s *UserService) GetUserByName(name string) (model.User, error) {
+func GetUserByName(name string) (model.User, error) {
 	user, err := mysql.FindUserByName(name)
 	if err != nil {
 		return model.User{}, err
@@ -32,7 +32,7 @@ func (s *UserService) GetUserByName(name string) (model.User, error) {
 	return *user, nil
 }
 
-func (s *UserService) CreateUser(user *model.User) (*data.User, error) {
+func CreateUser(user *model.User) (*data.User, error) {
 	ulen, plen := len(user.Username), len(user.Password)
 	if ulen > 32 || plen > 32 || ulen < 1 || plen <= 5 {
 		return nil, errors.New("invalid username or password length")
