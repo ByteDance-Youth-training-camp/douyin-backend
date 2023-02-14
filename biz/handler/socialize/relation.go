@@ -5,7 +5,10 @@ package socialize
 import (
 	"context"
 
+	"douyin_backend/biz/dal/mysql"
 	"douyin_backend/biz/hertz_gen/model/socialize"
+	"douyin_backend/biz/model"
+
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 )
@@ -22,6 +25,39 @@ func RelationAction(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(socialize.RelationActionResponse)
+	responseFail := func(code int32, msg string) {
+		resp.StatusCode, resp.StatusMsg = code, &msg
+		c.JSON(consts.StatusOK, resp)
+	}
+
+	if req.ActionType < 1 || req.ActionType > 3 {
+		responseFail(-1, "invalid action type")
+	}
+
+	uid := c.GetInt64("uid")
+
+	if req.ActionType == 1 {
+		// Follow
+		// Check if user has already followed
+		if _, err := mysql.FindFollow(req.ToUserID, uid); err == nil {
+			responseFail(-1, "user has already followed")
+			return
+		}
+		mysql.Follow(&model.Follow{UserId: req.ToUserID, FollowerId: uid, Canceled: false})
+	}
+
+	if req.ActionType == 2 {
+		// Unfollow
+		// Check if user has already followed
+		if _, err := mysql.FindFollow(req.ToUserID, uid); err != nil {
+			responseFail(-1, "user has not followed")
+			return
+		}
+		mysql.Unfollow(req.ToUserID, uid)
+	}
+
+	resp.StatusCode = 0
+	resp.StatusMsg = nil
 
 	c.JSON(consts.StatusOK, resp)
 }
@@ -39,6 +75,20 @@ func FollowList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(socialize.RelationFollowListResponse)
 
+	list, err := mysql.GetFollowList(req.UserID)
+
+	if err != nil {
+		resp.StatusCode = -1
+		errMsg := err.Error()
+		resp.StatusMsg = &errMsg
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
+	resp.StatusCode = 0
+	resp.StatusMsg = nil
+	resp.UserList = list
+
 	c.JSON(consts.StatusOK, resp)
 }
 
@@ -54,6 +104,20 @@ func FollowerList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := new(socialize.RelationFollowerListResponse)
+
+	list, err := mysql.GetFollowerList(req.UserID)
+
+	if err != nil {
+		resp.StatusCode = -1
+		errMsg := err.Error()
+		resp.StatusMsg = &errMsg
+		c.JSON(consts.StatusOK, resp)
+		return
+	}
+
+	resp.StatusCode = 0
+	resp.StatusMsg = nil
+	resp.UserList = list
 
 	c.JSON(consts.StatusOK, resp)
 }

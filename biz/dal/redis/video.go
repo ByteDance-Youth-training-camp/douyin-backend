@@ -13,6 +13,7 @@ import (
 func genVkey(id int64) string {
 	return strconv.FormatInt(id, 16)
 }
+
 func GetVideoInfo(vid int64) *data.Video {
 	video := &data.Video{}
 	result := video_cache.Get(Ctx, genVkey(vid))
