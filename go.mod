@@ -10,6 +10,7 @@ require (
 	github.com/cloudwego/hertz v0.5.2
 	github.com/golang-jwt/jwt/v4 v4.4.3
 	github.com/minio/minio-go/v7 v7.0.47
+	github.com/rabbitmq/amqp091-go v1.7.0
 	github.com/redis/go-redis/v9 v9.0.2
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	golang.org/x/net v0.0.0-20220722155237-a158d28d115b

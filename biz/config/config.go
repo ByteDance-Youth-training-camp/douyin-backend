@@ -20,6 +20,9 @@ type Config struct {
 		AccessKeyID     string `yaml:"key"`
 		SecretAccessKey string `yaml:"secret"`
 	} `yaml:"MinIO"`
+	RabbitMQ struct {
+		Address string `yaml:"address"`
+	} `yaml:"RabbitMQ"`
 	Hertz struct {
 		HostPort string `yaml:"host_port"`
 	} `yaml:"Hertz"`

@@ -3,8 +3,10 @@
 package main
 
 import (
+	"context"
 	"douyin_backend/biz/config"
 	"douyin_backend/biz/dal"
+	"douyin_backend/biz/dal/rabbitmq"
 	"fmt"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
@@ -19,7 +21,13 @@ func main() {
 	}
 	hlog.SetLevel(hlog.LevelTrace)
 	dal.Init()
+
 	h := server.Default(server.WithHostPorts(config.Cfg.Hertz.HostPort), server.WithMaxRequestBodySize(128*1024*1024))
+	h.Engine.OnShutdown = append(h.Engine.OnShutdown, func(ctx context.Context) {
+		rabbitmq.Close()
+	})
+
 	register(h)
+
 	h.Spin()
 }

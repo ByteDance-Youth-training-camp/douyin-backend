@@ -10,6 +10,9 @@ MinIO:
   key: "dy_access_key"
   secret: "892dcf10-a575-11ed-ab7e-fb82e1d9a6b7"
 
+RabbitMQ:
+  address: "localhost:5672"
+
 Hertz:
   host_port: "0.0.0.0:8888"
 
