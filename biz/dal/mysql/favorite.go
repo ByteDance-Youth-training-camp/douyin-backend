@@ -31,11 +31,11 @@ func CheckFavorite(userId int64, videoId int64) (bool, error) {
 	if result.Error != nil {
 		return false, result.Error
 	}
-	return cnt == 1, nil
+	return cnt != 0, nil
 }
 
 func GetFavoriteCount(videoId int64) (int64, error) {
 	var cnt int64
-	result := DB.Model(&model.Favorite{}).Where("video_id = ? and canceled = ?", videoId, false).Count(&cnt)
+	result := DB.Model(&model.Favorite{}).Distinct("user_id").Where("video_id = ? and canceled = ?", videoId, false).Count(&cnt)
 	return cnt, result.Error
 }
