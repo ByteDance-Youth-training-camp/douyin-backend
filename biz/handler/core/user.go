@@ -4,7 +4,6 @@ package core
 
 import (
 	"context"
-	"time"
 
 	"douyin_backend/biz/config"
 	"douyin_backend/biz/dal/mysql"
@@ -18,8 +17,6 @@ import (
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"golang.org/x/crypto/bcrypt"
 )
-
-var Expired = time.Minute * time.Duration(config.Cfg.Jwt.Expired)
 
 // UserRegister .
 // @router /douyin/user/register/ [POST]
@@ -63,7 +60,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		responseFail(-1, "internal error")
 		return
 	}
-	token, err := jwt.SignUser(user.ID, Expired)
+	token, err := jwt.SignUser(user.ID, config.JwtExpired)
 	if err != nil {
 		hlog.Debug(err)
 		responseFail(-1, "internal error")
@@ -94,7 +91,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	token, err := jwt.SignUser(dbUser.ID, Expired)
+	token, err := jwt.SignUser(dbUser.ID, config.JwtExpired)
 	if err != nil {
 		msg := "internal error"
 		resp.StatusCode, resp.StatusMsg = -1, &msg

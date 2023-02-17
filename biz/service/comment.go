@@ -2,6 +2,7 @@ package service
 
 import (
 	"douyin_backend/biz/dal/mysql"
+	"douyin_backend/biz/dal/redis"
 	"douyin_backend/biz/hertz_gen/model/data"
 	"douyin_backend/biz/model"
 	"douyin_backend/biz/service/userservice"
@@ -12,6 +13,8 @@ type CommentService struct {
 }
 
 func (s *CommentService) CreateComment(userId int64, videoId int64, content *string) (data.Comment, error) {
+	// delete cache, update db
+	redis.DeleteVideoCommentsCnt(videoId)
 	comment, err := mysql.CreateComment(&model.Comment{
 		UserId:    userId,
 		VideoId:   videoId,

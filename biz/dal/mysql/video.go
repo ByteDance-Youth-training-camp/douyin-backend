@@ -30,3 +30,9 @@ func UserVideoList(uid int64) ([]model.Video, error) {
 	result := DB.Where("user_id = ?", uid).Where("ready = true").Order("upload_time desc").Find(&videos)
 	return videos, result.Error
 }
+
+func VideoList(vids []int64) ([]model.Video, error) {
+	videos := make([]model.Video, 0)
+	result := DB.Order("upload_time desc").Find(&videos, vids)
+	return videos, result.Error
+}

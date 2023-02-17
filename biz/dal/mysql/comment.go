@@ -24,6 +24,12 @@ func DeleteCommentByID(id int64) error {
 
 func GetCommentList(videoId int64, userId int64) ([]*model.Comment, error) {
 	var comments []*model.Comment
-	result := DB.Where("video_id = ? and user_id = ? and canceled = ?", videoId, userId, false).Find(&comments)
+	result := DB.Where("video_id = ? and canceled = ?", videoId, false).Find(&comments)
 	return comments, result.Error
+}
+
+func GetCommentCount(videoId int64) (cnt int64, err error) {
+
+	result := DB.Model(&model.Comment{}).Where("video_id = ? ", videoId).Count(&cnt)
+	return cnt, result.Error
 }

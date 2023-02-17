@@ -29,14 +29,14 @@ type uClaims struct {
 }
 
 func SignUser(uid int64, expired time.Duration) (*string, error) {
+	hlog.Debug(expired)
 	// Create a JWT token with claims and signing method
-	time := time.Now()
 	claim := uClaims{
 		uid,
 		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Add(expired)),
-			IssuedAt:  jwt.NewNumericDate(time),
-			NotBefore: jwt.NewNumericDate(time),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(expired)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "mini-tiktok",
 			Subject:   "user-token",
 		},
@@ -89,10 +89,12 @@ func Uid(ctx context.Context, c *app.RequestContext) {
 	tk := token{}
 	err := c.Bind(&tk)
 	if err != nil {
+		hlog.Debug(err)
 		return
 	}
 	claims, err := ExtractClaims(tk.Token)
 	if err != nil {
+		hlog.Debug(err)
 		return
 	}
 	c.Set("uid", claims.Uid)

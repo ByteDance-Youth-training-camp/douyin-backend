@@ -3,6 +3,7 @@ package config
 import (
 	"douyin_backend/biz/mw/jwt"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -33,6 +34,7 @@ type Config struct {
 }
 
 var Cfg Config
+var JwtExpired time.Duration
 
 func InitConfig(filepath string) error {
 	file, err := os.ReadFile(filepath)
@@ -44,5 +46,6 @@ func InitConfig(filepath string) error {
 		return err
 	}
 	jwt.Secret = []byte(Cfg.Jwt.Secret)
+	JwtExpired = time.Minute * time.Duration(Cfg.Jwt.Expired)
 	return nil
 }

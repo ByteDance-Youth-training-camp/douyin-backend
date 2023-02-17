@@ -81,20 +81,22 @@ func GetFollowersCount(userId int64) (int64, error) {
 
 // TODO: message
 func GetFriends(userId int64) ([]*data.User, error) {
-	users, err := redis.GetFriendList(userId)
-	if err != nil {
-		return nil, err
-	}
+	return nil, nil
+	// users, err := redis.GetFriendList(userId)
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	var res []*data.User
+	// var res []*data.User
 
-	for _, user := range users {
-		usr, err := userservice.GetUserById(user)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, &usr)
-	}
+	// for _, user := range users {
+	// 	usr, err := userservice.GetUserById(user)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	res = append(res, &usr)
+	// }
 
-	return res, nil
+	// return res, nil
 }
+
