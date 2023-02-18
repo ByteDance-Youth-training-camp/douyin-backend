@@ -12,6 +12,7 @@ import (
 )
 
 var Secret = []byte("a secret key")
+var Expired = time.Minute * 10080
 
 /* About Standard JWT Claims
 aud: 接收jwt的一方

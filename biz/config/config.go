@@ -3,6 +3,7 @@ package config
 import (
 	"douyin_backend/biz/mw/jwt"
 	"os"
+	"time"
 
 	"gopkg.in/yaml.v3"
 )
@@ -44,5 +45,6 @@ func InitConfig(filepath string) error {
 		return err
 	}
 	jwt.Secret = []byte(Cfg.Jwt.Secret)
+	jwt.Expired = time.Minute * time.Duration(Cfg.Jwt.Expired)
 	return nil
 }
