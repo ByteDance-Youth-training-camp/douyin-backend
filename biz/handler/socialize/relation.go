@@ -132,5 +132,7 @@ func FriendList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(socialize.RelationFriendListResponse)
 
+	// TODO: implement
+
 	c.JSON(consts.StatusOK, resp)
 }

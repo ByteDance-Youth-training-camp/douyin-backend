@@ -2,6 +2,7 @@ package videoservice
 
 import (
 	"douyin_backend/biz/dal/minio"
+	"douyin_backend/biz/dal/mysql"
 	"douyin_backend/biz/dal/redis"
 	"douyin_backend/biz/hertz_gen/model/data"
 	"douyin_backend/biz/model"
@@ -37,9 +38,16 @@ func PackVideoList(mvlist []model.Video) []*data.Video {
 	dvlist := make([]*data.Video, len(mvlist))
 	for i := range mvlist {
 		dvlist[i] = packVideo(&mvlist[i])
-
 	}
 	return dvlist
+}
+
+func GetVideoById(vid int64) (*data.Video, error) {
+	mv, err := mysql.GetVideoById(vid)
+	if err != nil {
+		return nil, err
+	}
+	return packVideo(mv), nil
 }
 
 func packVideo(mv *model.Video) *data.Video {

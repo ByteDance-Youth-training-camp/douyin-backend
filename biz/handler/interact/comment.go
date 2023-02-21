@@ -4,9 +4,8 @@ package interact
 
 import (
 	"context"
-
 	"douyin_backend/biz/hertz_gen/model/interact"
-	"douyin_backend/biz/service"
+	"douyin_backend/biz/service/commentservice"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -40,10 +39,8 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	service := new(service.CommentService)
-
 	if req.ActionType == 1 { // add comment
-		comment, err := service.CreateComment(userId, req.VideoID, req.CommentText)
+		comment, err := commentservice.CreateComment(userId, req.VideoID, req.CommentText)
 
 		if err != nil {
 			responseFail(-1, "internal error")
@@ -52,7 +49,7 @@ func CommentAction(ctx context.Context, c *app.RequestContext) {
 
 		resp.Comment = &comment
 	} else { // delete comment
-		err := service.DeleteComment(*req.CommentID)
+		err := commentservice.DeleteComment(*req.CommentID)
 		if err != nil {
 			responseFail(-1, "internal error")
 			return
@@ -87,9 +84,7 @@ func CommentList(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	service := new(service.CommentService)
-
-	comments, err := service.GetCommentList(req.VideoID, userId)
+	comments, err := commentservice.GetCommentList(req.VideoID, userId)
 
 	if err != nil {
 		responseFail(-1, "internal error")

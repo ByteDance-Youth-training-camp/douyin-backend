@@ -4,9 +4,8 @@ package interact
 
 import (
 	"context"
-
 	"douyin_backend/biz/hertz_gen/model/interact"
-	"douyin_backend/biz/service"
+	"douyin_backend/biz/service/favoriteservice"
 
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
@@ -40,16 +39,14 @@ func FavoriteAction(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 
-	service := new(service.FavoriteService)
-
 	if req.ActionType == 1 { // add comment
-		err := service.AddFavorite(userId, req.VideoID)
+		err := favoriteservice.AddFavorite(userId, req.VideoID)
 		if err != nil {
 			responseFail(-1, "internal error: Unable to add")
 			return
 		}
 	} else { // delete comment
-		err := service.RemoveFavorite(userId, req.VideoID)
+		err := favoriteservice.RemoveFavorite(userId, req.VideoID)
 		if err != nil {
 			responseFail(-1, "internal error: Unable to delete")
 			return
@@ -74,9 +71,7 @@ func FavoriteList(ctx context.Context, c *app.RequestContext) {
 
 	resp := new(interact.FavoriteListResponse)
 
-	service := new(service.FavoriteService)
-
-	list, err := service.GetFavoriteList(req.UserID)
+	list, err := favoriteservice.GetFavoriteList(req.UserID)
 	if err != nil {
 		msg := err.Error()
 		resp.StatusCode, resp.StatusMsg = -1, &msg

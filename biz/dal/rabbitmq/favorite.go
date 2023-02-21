@@ -22,7 +22,7 @@ func extractMessageFavorite(message string) (userId int64, videoId int64, create
 }
 
 func PublishCrateFavorite(userId int64, videoId int64) {
-	_, err := Db.QueueDeclare(
+	_, err := favoriteChannel.QueueDeclare(
 		favoriteQueueName,
 		false,
 		false,
@@ -37,7 +37,7 @@ func PublishCrateFavorite(userId int64, videoId int64) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = Db.PublishWithContext(ctx, "", favoriteQueueName, false, false, amqp091.Publishing{
+	err = favoriteChannel.PublishWithContext(ctx, "", favoriteQueueName, false, false, amqp091.Publishing{
 		ContentType: "text/plain",
 		Body:        []byte(generateMessageFavorite(true, userId, videoId)),
 	})
@@ -48,7 +48,7 @@ func PublishCrateFavorite(userId int64, videoId int64) {
 }
 
 func PublishDeleteFavorite(userId int64, videoId int64) {
-	_, err := Db.QueueDeclare(
+	_, err := favoriteChannel.QueueDeclare(
 		favoriteQueueName,
 		false,
 		false,
@@ -63,7 +63,7 @@ func PublishDeleteFavorite(userId int64, videoId int64) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	err = Db.PublishWithContext(ctx, "", favoriteQueueName, false, false, amqp091.Publishing{
+	err = favoriteChannel.PublishWithContext(ctx, "", favoriteQueueName, false, false, amqp091.Publishing{
 		ContentType: "text/plain",
 		Body:        []byte(generateMessageFavorite(false, userId, videoId)),
 	})
@@ -74,13 +74,13 @@ func PublishDeleteFavorite(userId int64, videoId int64) {
 }
 
 func ConsumerFavorite() {
-	_, err := Db.QueueDeclare(favoriteQueueName, false, false, false, false, nil)
+	_, err := favoriteChannel.QueueDeclare(favoriteQueueName, false, false, false, false, nil)
 
 	if err != nil {
 		panic(err)
 	}
 
-	msg, err := Db.Consume(
+	msg, err := favoriteChannel.Consume(
 		favoriteQueueName,
 		"",
 		true,

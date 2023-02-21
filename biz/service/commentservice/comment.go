@@ -1,4 +1,4 @@
-package service
+package commentservice
 
 import (
 	"douyin_backend/biz/dal/mysql"
@@ -8,10 +8,7 @@ import (
 	"time"
 )
 
-type CommentService struct {
-}
-
-func (s *CommentService) CreateComment(userId int64, videoId int64, content *string) (data.Comment, error) {
+func CreateComment(userId int64, videoId int64, content *string) (data.Comment, error) {
 	comment, err := mysql.CreateComment(&model.Comment{
 		UserId:    userId,
 		VideoId:   videoId,
@@ -19,6 +16,7 @@ func (s *CommentService) CreateComment(userId int64, videoId int64, content *str
 		CreatedAt: time.Now(),
 		Canceled:  false,
 	})
+
 	if err != nil {
 		return data.Comment{}, err
 	}
@@ -37,11 +35,11 @@ func (s *CommentService) CreateComment(userId int64, videoId int64, content *str
 	}, nil
 }
 
-func (s *CommentService) DeleteComment(commentId int64) error {
+func DeleteComment(commentId int64) error {
 	return mysql.DeleteCommentByID(commentId)
 }
 
-func (s *CommentService) GetCommentList(videoId int64, userId int64) ([]*data.Comment, error) {
+func GetCommentList(videoId int64, userId int64) ([]*data.Comment, error) {
 	comments, err := mysql.GetCommentList(videoId, userId)
 
 	if err != nil {

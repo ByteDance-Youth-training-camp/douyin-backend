@@ -122,3 +122,32 @@ func GetFollowerCount(userId int64) (int64, error) {
 	}
 	return result.Val(), nil
 }
+
+func GetFriendList(userId int64) ([]int64, error) {
+	follower := follower_cache.SMembers(Ctx, genFkey(userId))
+	follow := follow_cache.SMembers(Ctx, genFkey(userId))
+
+	if follower.Err() != nil {
+		return nil, follower.Err()
+	}
+
+	if follow.Err() != nil {
+		return nil, follow.Err()
+	}
+
+	followerList := follower.Val()
+	followList := follow.Val()
+	var list []int64
+	for _, v := range followerList {
+		for _, v2 := range followList {
+			if v == v2 {
+				value, err := strconv.ParseInt(v, 16, 64)
+				if err != nil {
+					return nil, err
+				}
+				list = append(list, value)
+			}
+		}
+	}
+	return list, nil
+}
