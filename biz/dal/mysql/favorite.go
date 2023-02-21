@@ -24,3 +24,18 @@ func GetFavoriteList(userId int64) ([]int64, error) {
 	}
 	return videoIds, nil
 }
+
+func CheckFavorite(userId int64, videoId int64) (bool, error) {
+	var cnt int64
+	result := DB.Model(&model.Favorite{}).Where("user_id = ? and video_id = ? and canceled = ?", userId, videoId, false).Count(&cnt)
+	if result.Error != nil {
+		return false, result.Error
+	}
+	return cnt != 0, nil
+}
+
+func GetFavoriteCount(videoId int64) (int64, error) {
+	var cnt int64
+	result := DB.Model(&model.Favorite{}).Distinct("user_id").Where("video_id = ? and canceled = ?", videoId, false).Count(&cnt)
+	return cnt, result.Error
+}

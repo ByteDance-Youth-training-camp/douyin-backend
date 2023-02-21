@@ -72,6 +72,7 @@ func PublishAction(ctx context.Context, c *app.RequestContext) {
 func PublishList(ctx context.Context, c *app.RequestContext) {
 	var err error
 	var req core.PublishListRequest
+	userid := c.GetInt64("uid")
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(consts.StatusBadRequest, err.Error())
@@ -88,6 +89,6 @@ func PublishList(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp.StatusCode = 0
-	resp.VideoList = videoservice.PackVideoList(vlist)
+	resp.VideoList = videoservice.PackVideoList(userid, vlist)
 	c.JSON(consts.StatusOK, resp)
 }

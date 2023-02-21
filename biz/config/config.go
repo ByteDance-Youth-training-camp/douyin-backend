@@ -34,6 +34,7 @@ type Config struct {
 }
 
 var Cfg Config
+var JwtExpired time.Duration
 
 func InitConfig(filepath string) error {
 	file, err := os.ReadFile(filepath)
@@ -45,6 +46,6 @@ func InitConfig(filepath string) error {
 		return err
 	}
 	jwt.Secret = []byte(Cfg.Jwt.Secret)
-	jwt.Expired = time.Minute * time.Duration(Cfg.Jwt.Expired)
+	JwtExpired = time.Minute * time.Duration(Cfg.Jwt.Expired)
 	return nil
 }

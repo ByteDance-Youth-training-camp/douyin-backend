@@ -20,12 +20,12 @@ func _douyinMw() []app.HandlerFunc {
 
 func _commentMw() []app.HandlerFunc {
 	// your code...
-	return []app.HandlerFunc{jwt.Auth}
+	return nil
 }
 
 func _actionMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{jwt.Auth}
 }
 
 func _comment_ctionMw() []app.HandlerFunc {

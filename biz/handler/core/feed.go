@@ -23,7 +23,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		c.String(consts.StatusBadRequest, err.Error())
 		return
 	}
-
+	uid := c.GetInt64("uid")
 	resp := new(core.FeedResponse)
 
 	vlist, err := mysql.VideoFeed(req.LatestTime)
@@ -37,7 +37,7 @@ func Feed(ctx context.Context, c *app.RequestContext) {
 		return
 	}
 	lastTime := vlist[len(vlist)-1].UploadTime
-	resp.VideoList = videoservice.PackVideoList(vlist)
+	resp.VideoList = videoservice.PackVideoList(uid,vlist)
 	resp.NextTime = &lastTime
 
 	c.JSON(consts.StatusOK, resp)

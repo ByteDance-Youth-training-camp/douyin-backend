@@ -9,13 +9,19 @@ import (
 
 var Ctx = context.Background()
 var video_cache *redis.Client
+var video_comments_cnt_cache *redis.Client
+var video_user_like_cache *redis.Client
+var video_like_count_cache *redis.Client
 var follower_cache *redis.Client
 var follow_cache *redis.Client
 
 const (
-	video_info    = iota
-	follower_info = 1
-	follow_info   = 2
+	video_info_db = iota
+	video_comments_cnt_db
+	video_user_like_db
+	video_like_count_db
+	follower_info_db
+	follow_info_db
 )
 
 func Init() {
@@ -23,20 +29,38 @@ func Init() {
 	video_cache = redis.NewClient(&redis.Options{
 		Addr:     rdcfg.Address,
 		Password: rdcfg.Password,
-		DB:       video_info,
+		DB:       video_info_db,
+	})
+	video_comments_cnt_cache = redis.NewClient(&redis.Options{
+		Addr:     rdcfg.Address,
+		Password: rdcfg.Password,
+		DB:       video_comments_cnt_db,
+	})
+	video_user_like_cache = redis.NewClient(&redis.Options{
+		Addr:     rdcfg.Address,
+		Password: rdcfg.Password,
+		DB:       video_user_like_db,
+	})
+	video_like_count_cache = redis.NewClient(&redis.Options{
+		Addr:     rdcfg.Address,
+		Password: rdcfg.Password,
+		DB:       video_like_count_db,
 	})
 
 	follow_cache = redis.NewClient(&redis.Options{
 		Addr:     rdcfg.Address,
 		Password: rdcfg.Password,
-		DB:       follow_info,
+		DB:       follow_info_db,
 	})
 
 	follower_cache = redis.NewClient(&redis.Options{
 		Addr:     rdcfg.Address,
 		Password: rdcfg.Password,
-		DB:       follower_info,
+		DB:       follower_info_db,
 	})
 
 	video_cache.FlushDB(Ctx)
+	video_comments_cnt_cache.FlushDB(Ctx)
+	video_user_like_cache.FlushDB(Ctx)
+	video_like_count_cache.FlushDB(Ctx)
 }

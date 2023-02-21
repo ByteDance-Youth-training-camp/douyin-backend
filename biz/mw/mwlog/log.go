@@ -9,14 +9,14 @@ import (
 )
 
 func AccessLog() app.HandlerFunc {
-	return func(c context.Context, ctx *app.RequestContext) {
+	return func(ctx context.Context, c *app.RequestContext) {
 		start := time.Now()
-		ctx.Next(c)
+		c.Next(ctx)
 		end := time.Now()
 		latency := end.Sub(start).Microseconds
-		hlog.CtxTracef(c, "status=%d cost=%d method=%s full_path=%s client_ip=%s host=%s",
-			ctx.Response.StatusCode(), latency,
-			ctx.Request.Header.Method(), ctx.Request.URI().PathOriginal(), ctx.ClientIP(), ctx.Request.Host())
-		
+		hlog.CtxTracef(ctx, "status=%d cost=%d method=%s full_path=%s client_ip=%s host=%s resp= %s",
+			c.Response.StatusCode(), latency,
+			c.Request.Header.Method(), c.Request.URI().PathOriginal(), c.ClientIP(), c.Request.Host(), c.Response.Body())
+
 	}
 }

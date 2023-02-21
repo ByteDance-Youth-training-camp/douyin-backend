@@ -5,6 +5,7 @@ package core
 import (
 	"context"
 
+	"douyin_backend/biz/config"
 	"douyin_backend/biz/dal/mysql"
 	core "douyin_backend/biz/hertz_gen/model/core"
 	"douyin_backend/biz/hertz_gen/model/data"
@@ -59,7 +60,7 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 		responseFail(-1, "internal error")
 		return
 	}
-	token, err := jwt.SignUser(user.ID, jwt.Expired)
+	token, err := jwt.SignUser(user.ID, config.JwtExpired)
 	if err != nil {
 		hlog.Debug(err)
 		responseFail(-1, "internal error")
@@ -90,7 +91,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusOK, resp)
 		return
 	}
-	token, err := jwt.SignUser(dbUser.ID, jwt.Expired)
+	token, err := jwt.SignUser(dbUser.ID, config.JwtExpired)
 	if err != nil {
 		msg := "internal error"
 		resp.StatusCode, resp.StatusMsg = -1, &msg
